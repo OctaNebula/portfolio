@@ -470,76 +470,36 @@ section {
   width: 3vh;
   height: 3vh;
 }
-.softwarePro:nth-of-type(1) {
-  background: url("./icons/C-Sharp.png") no-repeat;
+.softwareDes:nth-of-type(1) {
+  background: url("./icons/Roblox-Studio.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(2) {
-  background: url("./icons/Visual-Studio.png") no-repeat;
+.softwareDes:nth-of-type(2) {
+  background: url("./icons/Blender.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(3) {
-  background: url("./icons/HTML.png") no-repeat;
+.softwareDes:nth-of-type(3) {
+  background: url("./icons/Adobe-Photoshop.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(4) {
-  background: url("./icons/CSS.png") no-repeat;
+.softwareDes:nth-of-type(4) {
+  background: url("./icons/Maya.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(5) {
-  background: url("./icons/JavaScript.png") no-repeat;
+.softwareDes:nth-of-type(5) {
+  background: url("./icons/3ds-Max.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(6) {
-  background: url("./icons/TypeScript.png") no-repeat;
+.softwareDes:nth-of-type(6) {
+  background: url("./icons/Substance-Painter.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(7) {
-  background: url("./icons/Python.png") no-repeat;
+.softwareDes:nth-of-type(7) {
+  background: url("./icons/Unity.png") no-repeat;
   background-size: cover;
 }
-.softwarePro:nth-of-type(8) {
-  background: url("./icons/Visual-Studio-Code.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(9) {
-  background: url("./icons/React.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(10) {
-  background: url("./icons/Redux.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(11) {
-  background: url("./icons/NextJS.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(12) {
-  background: url("./icons/Vue.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(13) {
-  background: url("./icons/Angular.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(14) {
-  background: url("./icons/PostgreSQL.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(15) {
-  background: url("./icons/FastAPI.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(16) {
-  background: url("./icons/Sequelize.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(17) {
-  background: url("./icons/Axios.png") no-repeat;
-  background-size: cover;
-}
-.softwarePro:nth-of-type(18) {
-  background: url("./icons/Threejs.png") no-repeat;
+.softwareDes:nth-of-type(8) {
+  background: url("./icons/Roblox-verified.png") no-repeat;
   background-size: cover;
 }
 
