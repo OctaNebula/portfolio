@@ -354,10 +354,12 @@ const mouse = new THREE.Vector2();
 function onMouseMove(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = (event.clientY / window.innerHeight) * 2 + 1;
+  /*
   //Update airplane
   airPlaneNewPos.x = (event.clientX * 3 / window.innerWidth) - 1.5;
   airPlaneNewPos.y = - (event.clientY * 1.6 / window.innerHeight) - 4.2;
   airPlaneGroup.rotation.z = airPlaneGroup.rotation.x = airPlaneNewPos.y - airPlaneGroup.position.y;
+  */
 }
 window.addEventListener("mousemove", onMouseMove, false);
 
@@ -365,10 +367,12 @@ window.addEventListener("mousemove", onMouseMove, false);
 function onTouchMove(event) {
   mouse.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
   mouse.y = (event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+  /*
   //Update airplane
   airPlaneNewPos.x = (event.changedTouches[0].clientX * 3 / window.innerWidth) - 1.5;
   airPlaneNewPos.y = - (event.changedTouches[0].clientY * 1.6 / window.innerHeight) - 4.2;
   airPlaneGroup.rotation.z = airPlaneGroup.rotation.x = airPlaneNewPos.y - airPlaneGroup.position.y;
+  */
 }
 window.addEventListener("touchmove", onTouchMove, false);
 
