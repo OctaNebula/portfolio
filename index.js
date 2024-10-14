@@ -700,6 +700,7 @@ const animate = () => {
   earthGroup.children[0].geometry.computeVertexNormals();
   earthGroup.children[0].geometry.attributes.position.needsUpdate = true;
   
+  /*
   //Airplane fan
   airPlaneGroup.children[0].rotation.x += 0.3;
   airPlaneGroup.children[1].rotation.x += 0.3;
@@ -719,6 +720,7 @@ const animate = () => {
 
   //Move airplane follow mouse
   airPlaneGroup.position.lerp(airPlaneNewPos, 0.1);
+  */
 
   //Check current section on screen
   let currentSection = document.querySelector(".is-visible");
