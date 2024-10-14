@@ -823,6 +823,6 @@ Array(200).fill().forEach(generateParticle);
 generateEarth();
 Array(60).fill().forEach(generateCloud);
 Array(80).fill().forEach(generateStar);
-generateAirPlane();
+//generateAirPlane();
 projectResize()
 animate();
