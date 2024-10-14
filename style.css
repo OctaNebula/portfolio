@@ -515,8 +515,7 @@ section {
   transition: all 0.5s ease-out;
 }
 .project {
-  min-width: 15vw;
-  max-width: 15vw;
+  width: 30vw;
   min-height: 35vh;
   max-height: 35vh;
   margin: 0 10px 0 10px;
