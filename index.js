@@ -205,6 +205,8 @@ function generateStar() {
 }
 
 //Airplane
+
+/*
 let airPlaneNewPos = new THREE.Vector3(0, -5, -5);
 let flagVertexCount;
 
@@ -317,6 +319,7 @@ function generateAirPlane() {
   helmet.rotation.set(Math.PI/2, 0, 0);
   airPlaneGroup.add(helmet);
 }
+*/
 
 //RESIZE WINDOW
 function onWindowResize() {
