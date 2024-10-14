@@ -515,9 +515,9 @@ section {
   transition: all 0.5s ease-out;
 }
 .project {
-  width: 30vw;
-  min-height: 48vh;
-  max-height: 48vh;
+  width: 25vw;
+  min-height: 35vh;
+  max-height: 35vh;
   margin: 0 10px 0 10px;
   border-radius: 10px;
   border: rgba(88, 0, 44, 0.726) solid 0.8px;
