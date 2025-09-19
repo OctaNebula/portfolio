@@ -1,49 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <nav>
-            <h1>Portfolio</h1>
-        </nav>
-    </header>
-
-    <main>
-        <section id="hero">
-            <h2>Welcome to My Portfolio</h2>
-            <p>This is a blank template ready for customization.</p>
-        </section>
-
-        <section id="about">
-            <h2>About</h2>
-            <p>About section content goes here.</p>
-        </section>
-
-        <section id="projects">
-            <h2>Projects</h2>
-            <p>Projects section content goes here.</p>
-        </section>
-
-        <section id="skills">
-            <h2>Skills</h2>
-            <p>This is a test to see if i can push properly to github.</p>
-        </section>
-
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Contact section content goes here.</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Portfolio. All rights reserved.</p>
-    </footer>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    <title>[gsap/threejs/inertia] ❍ Audio Visualizer with THREEJS - Challenge #2 / Entry 1</title>
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <style>
+      /* Fix cursor and create background layer structure */
+      #background-visualizer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        cursor: default;
+        pointer-events: none;
+      }
+      
+      #content-layer {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100vh;
+        pointer-events: auto;
+      }
+      
+      /* Loading overlay and notifications should be on top of everything */
+      .loading-overlay {
+        z-index: 9999 !important;
+      }
+      
+      .notification {
+        z-index: 9998 !important;
+      }
+      
+      /* Ensure all visualizer elements have default cursor */
+      #three-container, .space-background, .grid-overlay, 
+      .circular-visualizer, .audio-wave, .floating-particles,
+      .interface-container, .scanner-frame {
+        cursor: default !important;
+        pointer-events: none;
+      }
+      
+      /* Keep audio player interactive */
+      #audio-player {
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading overlay and notifications - should be on top -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-container">
+        <div class="preloader-canvas-container">
+          <canvas id="preloader-canvas" class="preloader-canvas" width="180" height="180"></canvas>
+        </div>
+        <div class="loading-text">INITIALIZING SCANNER</div>
+      </div>
+    </div>
+    <div class="notification" id="notification">Anomaly detected</div>
+    
+    <!-- Background visualizer layer -->
+    <div id="background-visualizer">
+      <!-- partial:index.partial.html -->
+      <div class="space-background"></div>
+      <div id="three-container"></div>
+    <div class="grid-overlay"></div>
+    <div class="circular-visualizer">
+      <canvas id="circular-canvas"></canvas>
+    </div>
+    <div class="audio-wave" id="audio-wave"></div>
+    <div class="floating-particles" id="floating-particles"></div>
+    <div class="interface-container">
+      <div class="header">
+        <div class="header-item"></div>
+        <div class="header-item">
+          <br />
+        </div>
+        <div class="header-item" id="timestamp">TIME: 00:00:00</div>
+      </div>
+      <div class="scanner-frame">
+        <div class="corner-tl"></div>
+        <div class="corner-tr"></div>
+        <div class="corner-bl"></div>
+        <div class="corner-br"></div>
+        <div class="scanner-id">GSAP.TIMELINE({ONSTART: WEBFLOW.INIT})</div>
+        <div class="scanner-id-right">IX2.ANIMATION.SEQUENCE(0x4F2E)</div>
+      </div>
+    </div>
+    <!-- Hidden elements that JavaScript needs but shouldn't be visible -->
+    <div style="display: none;">
+      <!-- Data panel elements -->
+      <div id="status-indicator">●</div>
+      <div id="stability-bar"></div>
+      <div id="stability-value">75%</div>
+      <div id="mass-value">1.728</div>
+      <div id="energy-value">5.3e8 J</div>
+      <div id="variance-value">0.0042</div>
+      <div id="peak-value">127.3 HZ</div>
+      <div id="amplitude-value">0.56</div>
+      <div id="phase-value">π/4</div>
+      
+      <!-- Canvas elements for visualizations -->
+      <canvas id="waveform-canvas" class="waveform-canvas"></canvas>
+      <canvas id="spectrum-canvas" class="spectrum-canvas"></canvas>
+      
+      <!-- Control elements -->
+      <div id="rotation-value">1.0</div>
+      <div id="resolution-value">32</div>
+      <div id="distortion-value">1.0</div>
+      <div id="reactivity-value">1.0</div>
+      <input type="range" min="0" max="5" value="1" step="0.1" id="rotation-slider">
+      <input type="range" min="12" max="64" value="32" step="4" id="resolution-slider">
+      <input type="range" min="0" max="3" value="1" step="0.1" id="distortion-slider">
+      <input type="range" min="0" max="2" value="1" step="0.1" id="reactivity-slider">
+      <input type="range" min="1" max="10" value="5" step="0.1" id="sensitivity-slider">
+      <button id="reset-btn">RESET</button>
+      <button id="analyze-btn">ANALYZE</button>
+      
+      <!-- Terminal elements -->
+      <div id="terminal-content">
+        <div class="terminal-line">NEXUS v3.7.2 INITIALIZED. SECURE CONNECTION ESTABLISHED.</div>
+        <div class="terminal-line command-line">gsap.inertia.init(throwProps: true, resistance: 0.35);</div>
+        <div class="terminal-line regular-line">Draggable.create({bounds: window, inertia: true, edgeResistance: 0.65});</div>
+        <div class="terminal-line command-line">webflow.interactions.trigger('IX2', {value: 'anomaly-detection'});</div>
+        <div class="terminal-line typing"></div>
+      </div>
+      <div id="terminal-status">ONLINE</div>
+      
+      <!-- Audio controls that need to exist -->
+      <div class="audio-controls">
+        <div class="demo-tracks">
+          <button class="demo-track-btn" data-url="https://assets.codepen.io/7558/Merkaba.mp3">MERKABA</button>
+          <button class="demo-track-btn" data-url="https://assets.codepen.io/7558/Dhamika.mp3">DHAMIKA</button>
+          <button class="demo-track-btn" data-url="https://assets.codepen.io/7558/Vacant.mp3">VACANT</button>
+          <button class="demo-track-btn" data-url="https://assets.codepen.io/7558/lxstnght-back_1.mp3">LXSTNGHT</button>
+        </div>
+        <button id="file-btn">UPLOAD AUDIO FILE</button>
+        <div id="file-label">NO FILE SELECTED</div>
+        <div id="sensitivity-value">5.0</div>
+        <div class="controls-row"></div>
+      </div>
+    </div>
+    
+    <!-- Keep the audio player visible but minimal -->
+    <audio id="audio-player" class="audio-player" crossorigin="anonymous" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"></audio>
+    </div> <!-- End background-visualizer -->
+    
+    <!-- Content layer - Add your portfolio content here -->
+    <div id="content-layer">
+      <!-- This is where you can add your portfolio content -->
+      <!-- The visualizer will play in the background behind this layer -->
+      
+      <!-- Example content (remove/replace as needed) -->
+      <div style="padding: 2rem; color: white; text-align: center; margin-top: 20vh;">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Your Portfolio Content Here</h1>
+        <p style="font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">The audio visualizer plays in the background</p>
+      </div>
+    </div>
+    
+    <!-- partial -->
+    <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Physics2DPlugin.min.js'></script>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html></div>
