@@ -173,10 +173,301 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log('All icons deselected');
   }
   
+  // Window Management System
+  let openWindows = [];
+  let highestZIndex = 1000;
+
+  function createDesktopWindow(windowType, title) {
+    // Create window container
+    const window = document.createElement('div');
+    window.className = 'desktop-window';
+    window.dataset.windowType = windowType;
+    
+    // Calculate responsive window size based on viewport
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    
+    // Set window size as percentage of viewport (max 600x400, min 350x250)
+    const windowWidth = Math.min(600, Math.max(350, viewportWidth * 0.4));
+    const windowHeight = Math.min(400, Math.max(250, viewportHeight * 0.5));
+    
+    window.style.width = `${windowWidth}px`;
+    window.style.height = `${windowHeight}px`;
+    
+    // Position window with slight offset for multiple windows
+    const offsetX = openWindows.length * 30;
+    const offsetY = openWindows.length * 30;
+    window.style.left = `${100 + offsetX}px`;
+    window.style.top = `${80 + offsetY}px`;
+    window.style.zIndex = ++highestZIndex;
+    
+    // Create titlebar
+    const titlebar = document.createElement('div');
+    titlebar.className = 'window-titlebar';
+    
+    const titleText = document.createElement('div');
+    titleText.className = 'window-title';
+    titleText.textContent = title;
+    
+    const controls = document.createElement('div');
+    controls.className = 'window-controls';
+    
+    // Minimize button
+    const minimizeBtn = document.createElement('button');
+    minimizeBtn.className = 'window-control-btn minimize';
+    minimizeBtn.innerHTML = '−';
+    minimizeBtn.title = 'Minimize';
+    
+    // Maximize button
+    const maximizeBtn = document.createElement('button');
+    maximizeBtn.className = 'window-control-btn maximize';
+    maximizeBtn.innerHTML = '□';
+    maximizeBtn.title = 'Maximize';
+    
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'window-control-btn close';
+    closeBtn.innerHTML = '×';
+    closeBtn.title = 'Close';
+    
+    controls.appendChild(minimizeBtn);
+    controls.appendChild(maximizeBtn);
+    controls.appendChild(closeBtn);
+    
+    titlebar.appendChild(titleText);
+    titlebar.appendChild(controls);
+    
+    // Create content area
+    const content = document.createElement('div');
+    content.className = 'window-content';
+    
+    // Add placeholder image for now
+    const img = document.createElement('img');
+    img.src = './assets/images/placeholder.png';
+    img.alt = `${title} Content`;
+    content.appendChild(img);
+    
+    // Assemble window
+    window.appendChild(titlebar);
+    window.appendChild(content);
+    
+    // Add resize handles
+    addResizeHandles(window);
+    
+    // Add to content layer
+    document.getElementById('content-layer').appendChild(window);
+    
+    // Make window draggable by titlebar
+    Draggable.create(window, {
+      type: "x,y",
+      bounds: "#content-layer",
+      trigger: titlebar,
+      cursor: "move",
+      onDragStart: function() {
+        bringWindowToFront(window);
+      }
+    });
+    
+    // Add event listeners
+    closeBtn.addEventListener('click', () => closeWindow(window));
+    minimizeBtn.addEventListener('click', () => minimizeWindow(window));
+    maximizeBtn.addEventListener('click', () => maximizeWindow(window));
+    
+    // Bring to front when clicked
+    window.addEventListener('mousedown', () => bringWindowToFront(window));
+    
+    // Add to open windows array
+    openWindows.push(window);
+    
+    // Animate window open
+    gsap.fromTo(window, {
+      scale: 0.8,
+      opacity: 0
+    }, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.3,
+      ease: "back.out(1.7)"
+    });
+    
+    return window;
+  }
+
+  function addResizeHandles(window) {
+    // Define all resize handle types and their behavior
+    const handles = [
+      { class: 'resize-nw', cursor: 'nw-resize', edges: ['top', 'left'] },
+      { class: 'resize-ne', cursor: 'ne-resize', edges: ['top', 'right'] },
+      { class: 'resize-sw', cursor: 'sw-resize', edges: ['bottom', 'left'] },
+      { class: 'resize-se', cursor: 'se-resize', edges: ['bottom', 'right'] },
+      { class: 'resize-n', cursor: 'n-resize', edges: ['top'] },
+      { class: 'resize-s', cursor: 's-resize', edges: ['bottom'] },
+      { class: 'resize-w', cursor: 'w-resize', edges: ['left'] },
+      { class: 'resize-e', cursor: 'e-resize', edges: ['right'] }
+    ];
+
+    handles.forEach(handle => {
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = `window-resize-handle ${handle.class}`;
+      window.appendChild(resizeHandle);
+
+      // Make each handle draggable for resizing
+      Draggable.create(resizeHandle, {
+        type: "x,y",
+        cursor: handle.cursor,
+        onDragStart: function() {
+          // Store initial window properties
+          this.startX = gsap.getProperty(window, "x");
+          this.startY = gsap.getProperty(window, "y");
+          this.startWidth = window.offsetWidth;
+          this.startHeight = window.offsetHeight;
+          
+          bringWindowToFront(window);
+        },
+        onDrag: function() {
+          const deltaX = this.x;
+          const deltaY = this.y;
+          
+          let newX = this.startX;
+          let newY = this.startY;
+          let newWidth = this.startWidth;
+          let newHeight = this.startHeight;
+
+          // Handle horizontal resizing
+          if (handle.edges.includes('left')) {
+            newX = this.startX + deltaX;
+            newWidth = this.startWidth - deltaX;
+          } else if (handle.edges.includes('right')) {
+            newWidth = this.startWidth + deltaX;
+          }
+
+          // Handle vertical resizing
+          if (handle.edges.includes('top')) {
+            newY = this.startY + deltaY;
+            newHeight = this.startHeight - deltaY;
+          } else if (handle.edges.includes('bottom')) {
+            newHeight = this.startHeight + deltaY;
+          }
+
+          // Apply minimum size constraints
+          const minWidth = 350;
+          const minHeight = 250;
+          
+          if (newWidth < minWidth) {
+            if (handle.edges.includes('left')) {
+              newX = this.startX + (this.startWidth - minWidth);
+            }
+            newWidth = minWidth;
+          }
+          
+          if (newHeight < minHeight) {
+            if (handle.edges.includes('top')) {
+              newY = this.startY + (this.startHeight - minHeight);
+            }
+            newHeight = minHeight;
+          }
+
+          // Apply the new dimensions
+          gsap.set(window, {
+            x: newX,
+            y: newY,
+            width: newWidth,
+            height: newHeight
+          });
+        },
+        onDragEnd: function() {
+          // Reset handle position
+          gsap.set(this.target, { x: 0, y: 0 });
+        }
+      });
+    });
+  }
+
+  function bringWindowToFront(window) {
+    window.style.zIndex = ++highestZIndex;
+  }
+
+  function closeWindow(window) {
+    // Animate close
+    gsap.to(window, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => {
+        window.remove();
+        openWindows = openWindows.filter(w => w !== window);
+      }
+    });
+  }
+
+  function minimizeWindow(window) {
+    // Simple minimize animation
+    gsap.to(window, {
+      scale: 0.1,
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.in",
+      transformOrigin: "left bottom",
+      onComplete: () => {
+        window.style.display = 'none';
+      }
+    });
+  }
+
+  function maximizeWindow(window) {
+    // Toggle between maximized and normal
+    if (window.dataset.maximized === 'true') {
+      // Restore
+      gsap.to(window, {
+        x: window.dataset.originalX,
+        y: window.dataset.originalY,
+        width: window.dataset.originalWidth,
+        height: window.dataset.originalHeight,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+      window.dataset.maximized = 'false';
+    } else {
+      // Store original position/size
+      window.dataset.originalX = gsap.getProperty(window, "x");
+      window.dataset.originalY = gsap.getProperty(window, "y");
+      window.dataset.originalWidth = window.style.width || '400px';
+      window.dataset.originalHeight = window.style.height || '300px';
+      
+      // Maximize
+      gsap.to(window, {
+        x: 0,
+        y: 0,
+        width: '100%',
+        height: '100%',
+        duration: 0.3,
+        ease: "power2.out"
+      });
+      window.dataset.maximized = 'true';
+    }
+  }
+
   function openDesktopWindow(windowType) {
-    // This will be implemented when we create the window system
-    addTerminalMessage(`OPENING WINDOW: ${windowType.toUpperCase()}`);
-    showNotification(`Opening ${windowType} window...`);
+    // Don't open duplicate windows
+    const existingWindow = openWindows.find(w => w.dataset.windowType === windowType);
+    if (existingWindow) {
+      bringWindowToFront(existingWindow);
+      return;
+    }
+    
+    // Create window with appropriate title
+    const titles = {
+      'about': 'About Me',
+      'projects': 'Projects',
+      'skills': 'Skills',
+      'contact': 'Contact'
+    };
+    
+    const title = titles[windowType] || windowType.toUpperCase();
+    createDesktopWindow(windowType, title);
+    
+    console.log(`Opened ${windowType} window`);
   }
 
   function setupExpandingCirclesPreloader() {
