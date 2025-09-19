@@ -1,0 +1,9 @@
+# Fonts Directory
+
+Place custom font files here:
+- .woff2 files (recommended)
+- .woff files  
+- .ttf files
+- .otf files
+
+Remember to add @font-face declarations in your CSS.
