@@ -138,7 +138,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         
         const windowType = icon.dataset.window;
-        openDesktopWindow(windowType);
+        
+        // Check if window already exists
+        const existingWindow = document.querySelector(`.desktop-window[data-window-type="${windowType}"]`);
+        
+        if (existingWindow) {
+          // If window is minimized, restore it
+          if (existingWindow.dataset.minimized === 'true') {
+            restoreWindow(existingWindow);
+          } else {
+            // If window is already open and visible, just bring it to front
+            bringToFront(existingWindow);
+          }
+        } else {
+          // Create new window
+          openDesktopWindow(windowType);
+        }
+        
         console.log(`Opening window: ${windowType}`);
       });
     });
@@ -185,6 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const window = document.createElement('div');
     window.className = 'desktop-window';
     window.dataset.windowType = windowType;
+    window.dataset.minimized = 'false'; // Initialize minimized state
     
     // Calculate responsive window size based on viewport
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -207,6 +224,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create titlebar
     const titlebar = document.createElement('div');
     titlebar.className = 'window-titlebar';
+    
+    // Create title section container
+    const titleSection = document.createElement('div');
+    titleSection.className = 'window-title-section';
+    
+    // Create window icon (get from corresponding desktop icon)
+    const windowIcon = document.createElement('img');
+    windowIcon.className = 'window-icon';
+    windowIcon.alt = 'Window Icon';
+    
+    // Find the corresponding desktop icon and use its image source
+    const desktopIcon = document.querySelector(`.desktop-icon[data-window="${windowType}"]`);
+    if (desktopIcon) {
+      const desktopIconImg = desktopIcon.querySelector('img');
+      windowIcon.src = desktopIconImg ? desktopIconImg.src : 'assets/images/placeholder.png';
+    } else {
+      windowIcon.src = 'assets/images/placeholder.png';
+    }
     
     const titleText = document.createElement('div');
     titleText.className = 'window-title';
@@ -237,7 +272,12 @@ document.addEventListener("DOMContentLoaded", function () {
     controls.appendChild(maximizeBtn);
     controls.appendChild(closeBtn);
     
-    titlebar.appendChild(titleText);
+    // Assemble title section
+    titleSection.appendChild(windowIcon);
+    titleSection.appendChild(titleText);
+    
+    // Assemble titlebar
+    titlebar.appendChild(titleSection);
     titlebar.appendChild(controls);
     
     // Create content area
@@ -268,6 +308,10 @@ document.addEventListener("DOMContentLoaded", function () {
       cursor: "move",
       onDragStart: function() {
         bringWindowToFront(window);
+      },
+      onPress: function() {
+        // Ensure this window comes to front immediately when drag is initiated
+        bringWindowToFront(window);
       }
     });
     
@@ -276,8 +320,11 @@ document.addEventListener("DOMContentLoaded", function () {
     minimizeBtn.addEventListener('click', () => minimizeWindow(window));
     maximizeBtn.addEventListener('click', () => maximizeWindow(window));
     
-    // Bring to front when clicked
-    window.addEventListener('mousedown', () => bringWindowToFront(window));
+    // Bring to front when clicked (with event handling improvements)
+    window.addEventListener('mousedown', (e) => {
+      e.stopPropagation(); // Prevent event from bubbling to other windows
+      bringWindowToFront(window);
+    });
     
     // Add to open windows array
     openWindows.push(window);
@@ -412,17 +459,83 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function minimizeWindow(window) {
-    // Simple minimize animation
+    // Mark window as minimized instead of hiding it
+    window.dataset.minimized = 'true';
+    
+    // Save original position for restore
+    if (!window.dataset.originalLeft) {
+      window.dataset.originalLeft = window.style.left;
+      window.dataset.originalTop = window.style.top;
+    }
+    
+    // Get start button position for animation target
+    const startButton = document.querySelector('.start-button');
+    const startButtonRect = startButton.getBoundingClientRect();
+    const windowRect = window.getBoundingClientRect();
+    
+    // Calculate target position (start button center)
+    const targetX = startButtonRect.left + startButtonRect.width / 2 - windowRect.width / 2;
+    const targetY = startButtonRect.top + startButtonRect.height / 2 - windowRect.height / 2;
+    
+    // Minimize animation towards start menu
     gsap.to(window, {
+      x: targetX - parseInt(window.style.left),
+      y: targetY - parseInt(window.style.top),
       scale: 0.1,
       opacity: 0,
-      duration: 0.3,
+      duration: 0.4,
       ease: "power2.in",
-      transformOrigin: "left bottom",
       onComplete: () => {
-        window.style.display = 'none';
+        window.style.visibility = 'hidden';
+        // Reset transform for clean restore
+        gsap.set(window, { x: 0, y: 0, scale: 1 });
       }
     });
+    
+    // Update taskbar to show minimized state
+    updateTaskbarButtonStates();
+  }
+
+  function restoreWindow(window) {
+    // Remove minimized state
+    window.dataset.minimized = 'false';
+    window.style.visibility = 'visible';
+    
+    // Get start button position for animation start point
+    const startButton = document.querySelector('.start-button');
+    const startButtonRect = startButton.getBoundingClientRect();
+    
+    // Restore to original position if saved
+    if (window.dataset.originalLeft && window.dataset.originalTop) {
+      window.style.left = window.dataset.originalLeft;
+      window.style.top = window.dataset.originalTop;
+    }
+    
+    // Calculate start position (from start button center)
+    const windowRect = window.getBoundingClientRect();
+    const startX = startButtonRect.left + startButtonRect.width / 2 - windowRect.width / 2;
+    const startY = startButtonRect.top + startButtonRect.height / 2 - windowRect.height / 2;
+    
+    // Set initial state (at start menu position, small and transparent)
+    gsap.set(window, {
+      x: startX - parseInt(window.style.left),
+      y: startY - parseInt(window.style.top),
+      scale: 0.1,
+      opacity: 0
+    });
+    
+    // Restore animation flying back from start menu
+    gsap.to(window, {
+      x: 0,
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      duration: 0.4,
+      ease: "power2.out"
+    });
+    
+    // Bring to front and update taskbar (this handles both z-index and taskbar state)
+    bringWindowToFront(window);
   }
 
   function maximizeWindow(window) {
@@ -459,10 +572,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function openDesktopWindow(windowType) {
-    // Don't open duplicate windows
+    // Check for existing window (including minimized ones)
     const existingWindow = openWindows.find(w => w.dataset.windowType === windowType);
     if (existingWindow) {
-      bringWindowToFront(existingWindow);
+      // If window is minimized, restore it
+      if (existingWindow.dataset.minimized === 'true') {
+        restoreWindow(existingWindow);
+      } else {
+        // If window is already open and visible, just bring it to front
+        bringWindowToFront(existingWindow);
+      }
       return;
     }
     
@@ -550,7 +669,16 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Add click handler to focus window
     taskbarBtn.addEventListener('click', () => {
-      bringWindowToFront(window);
+      // Check if window is minimized
+      if (window.dataset.minimized === 'true') {
+        restoreWindow(window);
+      } else if (window.style.visibility === 'hidden') {
+        // Fallback check for hidden windows
+        restoreWindow(window);
+      } else {
+        // Window is visible, just bring to front
+        bringWindowToFront(window);
+      }
       updateTaskbarButtonStates();
     });
     
@@ -575,10 +703,18 @@ document.addEventListener("DOMContentLoaded", function () {
       const windowId = btn.dataset.windowId;
       const correspondingWindow = openWindows.find(w => w.dataset.windowType === windowId);
       
-      if (correspondingWindow === topWindow) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
+      // Remove all state classes first
+      btn.classList.remove('active', 'minimized');
+      
+      if (correspondingWindow) {
+        if (correspondingWindow.dataset.minimized === 'true') {
+          // Window is minimized
+          btn.classList.add('minimized');
+        } else if (correspondingWindow === topWindow) {
+          // Window is active (on top)
+          btn.classList.add('active');
+        }
+        // If window exists but is not minimized or active, it has no special class (inactive)
       }
     });
   }
@@ -588,10 +724,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let highestZ = 0;
     
     openWindows.forEach(window => {
-      const z = parseInt(window.style.zIndex) || 0;
-      if (z > highestZ) {
-        highestZ = z;
-        topWindow = window;
+      // Only consider non-minimized windows
+      if (window.dataset.minimized !== 'true') {
+        const z = parseInt(window.style.zIndex) || 0;
+        if (z > highestZ) {
+          highestZ = z;
+          topWindow = window;
+        }
       }
     });
     
