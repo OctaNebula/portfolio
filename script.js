@@ -1,6 +1,19 @@
 import * as THREE from "https://esm.sh/three@0.175.0";
 import { OrbitControls } from "https://esm.sh/three@0.175.0/examples/jsm/controls/OrbitControls.js";
+
+console.log("Script.js loaded!");
+
+// Desktop Icons System Configuration
+let iconDraggingEnabled = false; // Toggle for icon dragging - disabled by default
+
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOMContentLoaded fired!");
+  
+  // Initialize desktop icons FIRST to test
+  console.log("About to call initDesktopIcons EARLY");
+  initDesktopIcons();
+  console.log("Desktop icons initialized EARLY");
+  
   setupExpandingCirclesPreloader();
   
   // Initialize audio system early
@@ -27,6 +40,144 @@ document.addEventListener("DOMContentLoaded", function () {
   let floatingParticles = [];
   let currentAudioSrc = null;
   let currentMessageIndex = 0;
+
+  // Desktop Icons System
+  let selectedIcon = null;
+  let clickTimeout = null;
+
+  // Function to toggle icon dragging - for future settings menu
+  function toggleIconDragging(enabled) {
+    iconDraggingEnabled = enabled;
+    // Re-initialize icons to apply the change
+    initDesktopIcons();
+    console.log('Icon dragging:', enabled ? 'enabled' : 'disabled');
+  }
+
+  function initDesktopIcons() {
+    console.log('initDesktopIcons called');
+    const icons = document.querySelectorAll('.desktop-icon');
+    console.log('Found desktop icons:', icons.length, icons);
+    
+    icons.forEach(icon => {
+      // Only make icon draggable if dragging is enabled
+      if (iconDraggingEnabled) {
+        // Make icon draggable with GSAP
+        Draggable.create(icon, {
+        type: "x,y",
+        bounds: "#content-layer",
+        inertia: false,
+        cursor: "auto",
+        dragResistance: 0,
+        edgeResistance: 0.65,
+        minimumMovement: 3,
+        allowEventDefault: false, // Prevent default behaviors that might cause lag
+        dragClickables: true, // Allow dragging of clickable elements
+        snap: {
+          x: [0, 80, 160, 240, 320, 400, 480, 560, 640, 720, 800],
+          y: [0, 96, 192, 288, 384, 480, 576, 672, 768]
+        },
+        onDragStart: function() {
+          // Don't select when dragging starts
+          console.log('Started dragging icon:', icon.dataset.window);
+        },
+        onDrag: function() {
+          // Don't select during drag - just free movement
+        },
+        onDragEnd: function() {
+          console.log('Drag ended. Position:', this.x, this.y);
+          // Instant snap - no animation
+          const snapX = Math.round(this.x / 80) * 80;
+          const snapY = Math.round(this.y / 96) * 96;
+          
+          gsap.set(icon, {
+            x: snapX,
+            y: snapY
+          });
+          
+          // Don't select after dragging - just snap to grid
+          console.log('Instantly snapped to:', snapX, snapY);
+        }
+      });
+      }
+      
+      // Single click selection
+      icon.addEventListener('click', (e) => {
+        console.log('Icon clicked!', icon);
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Select immediately for instant visual feedback
+        selectIcon(icon);
+        
+        // Clear any pending double-click
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+          clickTimeout = null;
+        }
+        
+        // Set timeout to check if this was part of a double-click
+        clickTimeout = setTimeout(() => {
+          console.log('Single click confirmed (no double-click)');
+          // Icon is already selected, nothing more to do
+          clickTimeout = null;
+        }, 300);
+      });
+      
+      // Double click to open window
+      icon.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Clear single click timeout
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+          clickTimeout = null;
+        }
+        
+        const windowType = icon.dataset.window;
+        openDesktopWindow(windowType);
+        console.log(`Opening window: ${windowType}`);
+      });
+    });
+    
+    // Click elsewhere to deselect
+    document.addEventListener('click', (e) => {
+      // Use the actual clicked element, not e.target which can be wrong during fast drags
+      const clickedElement = document.elementFromPoint(e.clientX, e.clientY);
+      if (!clickedElement || !clickedElement.closest('.desktop-icon')) {
+        deselectAllIcons();
+      }
+    });
+  }
+  
+  function selectIcon(icon) {
+    console.log('selectIcon called on:', icon);
+    
+    // Deselect all other icons
+    deselectAllIcons();
+    
+    // Select this icon - add selected class to maintain hover state
+    icon.classList.add('selected');
+    selectedIcon = icon;
+    console.log('Icon selected successfully');
+  }
+  
+  function deselectAllIcons() {
+    console.log('deselectAllIcons called');
+    
+    const icons = document.querySelectorAll('.desktop-icon');
+    icons.forEach(icon => {
+      icon.classList.remove('selected');
+    });
+    selectedIcon = null;
+    console.log('All icons deselected');
+  }
+  
+  function openDesktopWindow(windowType) {
+    // This will be implemented when we create the window system
+    addTerminalMessage(`OPENING WINDOW: ${windowType.toUpperCase()}`);
+    showNotification(`Opening ${windowType} window...`);
+  }
 
   function setupExpandingCirclesPreloader() {
     const canvas = document.getElementById("preloader-canvas");
@@ -1611,4 +1762,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".spectrum-analyzer"),
     document.getElementById("spectrum-handle")
   );
+  
+  // Desktop initialization moved to top for testing
 });
