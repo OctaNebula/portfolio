@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
   initDesktopIcons();
   console.log("Desktop icons initialized EARLY");
   
+  // Initialize taskbar
+  initTaskbar();
+  
   setupExpandingCirclesPreloader();
   
   // Initialize audio system early
@@ -279,6 +282,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add to open windows array
     openWindows.push(window);
     
+    // Add to taskbar
+    addWindowToTaskbar(window);
+    
     // Animate window open
     gsap.fromTo(window, {
       scale: 0.8,
@@ -385,9 +391,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function bringWindowToFront(window) {
     window.style.zIndex = ++highestZIndex;
+    updateTaskbarButtonStates();
   }
 
   function closeWindow(window) {
+    // Remove from taskbar
+    removeWindowFromTaskbar(window);
+    
     // Animate close
     gsap.to(window, {
       scale: 0.8,
@@ -468,6 +478,124 @@ document.addEventListener("DOMContentLoaded", function () {
     createDesktopWindow(windowType, title);
     
     console.log(`Opened ${windowType} window`);
+  }
+
+  // Taskbar Management System
+  function initTaskbar() {
+    console.log('Initializing taskbar...');
+    
+    // Initialize time display
+    updateTaskbarTime();
+    setInterval(updateTaskbarTime, 1000);
+    
+    // Add start button functionality
+    const startButton = document.querySelector('.start-button');
+    if (startButton) {
+      startButton.addEventListener('click', () => {
+        console.log('Start button clicked - TODO: implement start menu');
+        // TODO: Add start menu functionality later
+      });
+    }
+    
+    // Add system tray functionality
+    const audioToggle = document.querySelector('.audio-visualizer-toggle');
+    if (audioToggle) {
+      audioToggle.addEventListener('click', () => {
+        console.log('Audio visualizer toggle clicked');
+        // TODO: Add audio visualizer controls
+      });
+    }
+    
+    console.log('Taskbar initialized');
+  }
+
+  function updateTaskbarTime() {
+    const timeElement = document.querySelector('.time-display');
+    const dateElement = document.querySelector('.date-display');
+    
+    if (timeElement && dateElement) {
+      const now = new Date();
+      
+      // Format time as HH:MM:SS
+      const time = now.toLocaleTimeString('en-US', { 
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
+      // Format date as DDD DD MMM
+      const date = now.toLocaleDateString('en-US', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short'
+      }).toUpperCase();
+      
+      timeElement.textContent = time;
+      dateElement.textContent = date;
+    }
+  }
+
+  function addWindowToTaskbar(window) {
+    const taskbarWindows = document.getElementById('taskbar-windows');
+    const windowType = window.dataset.windowType;
+    const windowTitle = window.querySelector('.window-title').textContent;
+    
+    // Create taskbar button
+    const taskbarBtn = document.createElement('div');
+    taskbarBtn.className = 'taskbar-window-btn active';
+    taskbarBtn.dataset.windowId = window.dataset.windowType;
+    taskbarBtn.textContent = windowTitle;
+    taskbarBtn.title = windowTitle;
+    
+    // Add click handler to focus window
+    taskbarBtn.addEventListener('click', () => {
+      bringWindowToFront(window);
+      updateTaskbarButtonStates();
+    });
+    
+    taskbarWindows.appendChild(taskbarBtn);
+    window.taskbarButton = taskbarBtn;
+    
+    updateTaskbarButtonStates();
+  }
+
+  function removeWindowFromTaskbar(window) {
+    if (window.taskbarButton) {
+      window.taskbarButton.remove();
+      updateTaskbarButtonStates();
+    }
+  }
+
+  function updateTaskbarButtonStates() {
+    const buttons = document.querySelectorAll('.taskbar-window-btn');
+    const topWindow = getTopWindow();
+    
+    buttons.forEach(btn => {
+      const windowId = btn.dataset.windowId;
+      const correspondingWindow = openWindows.find(w => w.dataset.windowType === windowId);
+      
+      if (correspondingWindow === topWindow) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  function getTopWindow() {
+    let topWindow = null;
+    let highestZ = 0;
+    
+    openWindows.forEach(window => {
+      const z = parseInt(window.style.zIndex) || 0;
+      if (z > highestZ) {
+        highestZ = z;
+        topWindow = window;
+      }
+    });
+    
+    return topWindow;
   }
 
   function setupExpandingCirclesPreloader() {

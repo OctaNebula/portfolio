@@ -1003,3 +1003,146 @@ textarea {
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
+
+/* Desktop Taskbar */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(135deg, var(--panel-bg), rgba(255, 78, 66, 0.05));
+  border-top: 1px solid var(--panel-border);
+  backdrop-filter: blur(15px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 2000;
+  user-select: none;
+}
+
+.taskbar-left, .taskbar-center, .taskbar-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.taskbar-center {
+  flex: 1;
+  justify-content: center;
+  margin: 0 20px;
+}
+
+/* Start Button */
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.start-button:hover {
+  background: var(--panel-highlight);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 8px rgba(255, 78, 66, 0.3);
+}
+
+.start-button img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.start-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Taskbar Window Buttons */
+.taskbar-windows {
+  display: flex;
+  gap: 4px;
+  max-width: 600px;
+  overflow: hidden;
+}
+
+.taskbar-window-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  max-width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.taskbar-window-btn:hover {
+  background: var(--panel-highlight);
+  color: var(--text-primary);
+}
+
+.taskbar-window-btn.active {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-secondary);
+}
+
+/* System Tray */
+.system-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tray-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 10px;
+  min-width: 32px;
+}
+
+.tray-item:hover {
+  background: var(--panel-highlight);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.time-display {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.date-display {
+  font-size: 9px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
