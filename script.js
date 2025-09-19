@@ -2,13 +2,20 @@ import * as THREE from "https://esm.sh/three@0.175.0";
 import { OrbitControls } from "https://esm.sh/three@0.175.0/examples/jsm/controls/OrbitControls.js";
 document.addEventListener("DOMContentLoaded", function () {
   setupExpandingCirclesPreloader();
+  
+  // Initialize audio system early
+  setTimeout(() => {
+    initAudio();
+    ensureAudioContextStarted();
+  }, 1000);
+  
   let audioContext = null;
   let audioAnalyser = null;
   let audioSource = null;
   let audioData;
   let frequencyData;
-  let audioReactivity = 1.0;
-  let audioSensitivity = 5.0;
+  let audioReactivity = 1.5;
+  let audioSensitivity = 7.0;
   let isAudioInitialized = false;
   let isAudioPlaying = false;
   let lastUserActionTime = Date.now();
@@ -206,8 +213,12 @@ document.addEventListener("DOMContentLoaded", function () {
       audioAnalyser.smoothingTimeConstant = 0.8;
       audioData = new Uint8Array(audioAnalyser.frequencyBinCount);
       frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
-      audioAnalyser.connect(audioContext.destination);
+      // Don't connect analyser directly to destination - let audio elements handle output
       isAudioInitialized = true;
+      
+      // AUTO-CONNECT ALL AUDIO ELEMENTS
+      connectAllAudioElements();
+      
       addTerminalMessage("AUDIO ANALYSIS SYSTEM INITIALIZED.");
       showNotification("AUDIO ANALYSIS SYSTEM ONLINE");
       return true;
@@ -216,6 +227,80 @@ document.addEventListener("DOMContentLoaded", function () {
       addTerminalMessage("ERROR: AUDIO SYSTEM INITIALIZATION FAILED.");
       showNotification("AUDIO SYSTEM ERROR");
       return false;
+    }
+  }
+
+  // Auto-connect all audio elements to the visualizer
+  function connectAllAudioElements() {
+    const audioElements = document.querySelectorAll('audio, video');
+    console.log('Found audio elements:', audioElements.length);
+    
+    audioElements.forEach((audioElement, index) => {
+      try {
+        if (!audioElement.dataset.connected) {
+          const source = audioContext.createMediaElementSource(audioElement);
+          source.connect(audioAnalyser);
+          source.connect(audioContext.destination); // Keep audio audible
+          audioElement.dataset.connected = 'true';
+          
+          console.log(`Connected audio element ${index + 1}:`, audioElement.src || audioElement.currentSrc);
+          
+          // Set up play/pause listeners
+          audioElement.addEventListener('play', () => {
+            isAudioPlaying = true;
+            console.log('Audio started playing');
+          });
+          
+          audioElement.addEventListener('pause', () => {
+            isAudioPlaying = false;
+            console.log('Audio paused');
+          });
+          
+          audioElement.addEventListener('ended', () => {
+            isAudioPlaying = false;
+            console.log('Audio ended');
+          });
+        }
+      } catch (error) {
+        console.log(`Audio element ${index + 1} already connected or error:`, error);
+      }
+    });
+
+    // Watch for new audio elements
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if ((node.tagName === 'AUDIO' || node.tagName === 'VIDEO') && !node.dataset.connected) {
+              setTimeout(() => connectAudioElement(node), 100);
+            }
+            // Check children
+            node.querySelectorAll?.('audio:not([data-connected]), video:not([data-connected])').forEach(connectAudioElement);
+          }
+        });
+      });
+    });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Connect a single audio element
+  function connectAudioElement(audioElement) {
+    if (!audioContext || !audioAnalyser || audioElement.dataset.connected) return;
+    
+    try {
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(audioAnalyser);
+      source.connect(audioContext.destination);
+      audioElement.dataset.connected = 'true';
+      
+      console.log('Connected new audio element:', audioElement.src || audioElement.currentSrc);
+      
+      audioElement.addEventListener('play', () => { isAudioPlaying = true; });
+      audioElement.addEventListener('pause', () => { isAudioPlaying = false; });
+      audioElement.addEventListener('ended', () => { isAudioPlaying = false; });
+    } catch (error) {
+      console.log('Error connecting audio element:', error);
     }
   }
 
@@ -406,7 +491,8 @@ document.addEventListener("DOMContentLoaded", function () {
     circularCtx.clearRect(0, 0, width, height);
     audioAnalyser.getByteFrequencyData(frequencyData);
     const numPoints = 180;
-    const baseRadius = Math.min(width, height) * 0.4;
+    // Keep original ring size regardless of canvas size
+    const baseRadius = 450 * 0.4; // Fixed at original 450px container size
     circularCtx.beginPath();
     circularCtx.arc(centerX, centerY, baseRadius * 1.2, 0, Math.PI * 2);
     circularCtx.fillStyle = "rgba(255, 78, 66, 0.05)";
@@ -432,8 +518,9 @@ document.addEventListener("DOMContentLoaded", function () {
           sum += frequencyData[freqIndex];
         }
         const value = sum / (segmentSize * 255);
-        const adjustedValue = value * (audioSensitivity / 5) * audioReactivity;
-        const dynamicRadius = ringRadius * (1 + adjustedValue * 0.5);
+        // Moderate ring reactivity
+        const adjustedValue = value * audioSensitivity * audioReactivity * 0.15;
+        const dynamicRadius = ringRadius * (1 + adjustedValue * 0.8);
         const angle = (i / numPoints) * Math.PI * 2;
         const x = centerX + Math.cos(angle) * dynamicRadius;
         const y = centerY + Math.sin(angle) * dynamicRadius;
@@ -1163,7 +1250,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         vec3 finalColor = color * fresnel * pulse * (1.0 + audioLevel * 0.8);
         
-        float alpha = fresnel * (0.7 - audioLevel * 0.3);
+        float alpha = fresnel * 0.7;  // Keep transparency constant
         
         gl_FragColor = vec4(finalColor, alpha);
       }
@@ -1215,7 +1302,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         vec3 finalColor = color * fresnel * (0.8 + 0.2 * pulse) * audioFactor;
         
-        float alpha = fresnel * (0.3 * audioFactor) * (1.0 - audioLevel * 0.2);
+        float alpha = fresnel * 0.3;  // Keep transparency constant
         
         gl_FragColor = vec4(finalColor, alpha);
       }
@@ -1319,7 +1406,8 @@ document.addEventListener("DOMContentLoaded", function () {
       for (let i = 0; i < frequencyData.length; i++) {
         sum += frequencyData[i];
       }
-      audioLevel = ((sum / frequencyData.length / 255) * audioSensitivity) / 5;
+      // Balanced audio level calculation
+      audioLevel = (sum / frequencyData.length / 255) * audioSensitivity * 0.4;
       drawCircularVisualizer();
       drawSpectrumAnalyzer();
       updateAudioWave();
@@ -1336,7 +1424,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("rotation-slider").value
     );
     if (anomalyObject) {
-      const audioRotationFactor = 1 + audioLevel * audioReactivity;
+      const audioRotationFactor = 1 + audioLevel * audioReactivity * 0.8;
       anomalyObject.rotation.y += 0.005 * rotationSpeed * audioRotationFactor;
       anomalyObject.rotation.z += 0.002 * rotationSpeed * audioRotationFactor;
     }

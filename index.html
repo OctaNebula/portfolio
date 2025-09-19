@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="./style.css">
     <style>
       /* Fix cursor and create background layer structure */
+      #vanta-net-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        cursor: default;
+        pointer-events: none;
+      }
+      
       #background-visualizer {
         position: fixed;
         top: 0;
@@ -61,6 +72,9 @@
     </div>
     <div class="notification" id="notification">Anomaly detected</div>
     
+    <!-- Vanta.js NET background layer - furthest back -->
+    <div id="vanta-net-bg"></div>
+    
     <!-- Background visualizer layer -->
     <div id="background-visualizer">
       <!-- partial:index.partial.html -->
@@ -85,8 +99,8 @@
         <div class="corner-tr"></div>
         <div class="corner-bl"></div>
         <div class="corner-br"></div>
-        <div class="scanner-id">GSAP.TIMELINE({ONSTART: WEBFLOW.INIT})</div>
-        <div class="scanner-id-right">IX2.ANIMATION.SEQUENCE(0x4F2E)</div>
+        <div class="scanner-id"></div>
+        <div class="scanner-id-right"></div>
       </div>
     </div>
     <!-- Hidden elements that JavaScript needs but shouldn't be visible -->
@@ -145,22 +159,84 @@
     </div>
     
     <!-- Keep the audio player visible but minimal -->
-    <audio id="audio-player" class="audio-player" crossorigin="anonymous" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"></audio>
+    <!-- Removed duplicate - using header audio player instead -->
     </div> <!-- End background-visualizer -->
     
-    <!-- Content layer - Add your portfolio content here -->
+    <!-- Content layer - Clean for desktop portfolio -->
     <div id="content-layer">
-      <!-- This is where you can add your portfolio content -->
-      <!-- The visualizer will play in the background behind this layer -->
-      
-      <!-- Example content (remove/replace as needed) -->
-      <div style="padding: 2rem; color: white; text-align: center; margin-top: 20vh;">
-        <h1 style="font-size: 3rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Your Portfolio Content Here</h1>
-        <p style="font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">The audio visualizer plays in the background</p>
+      <!-- Audio player back in content area -->
+      <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <audio controls style="width: 250px;" id="test-audio" crossorigin="anonymous">
+          <source src="./assets/audio/myheart.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
       </div>
+      
+      <!-- Desktop portfolio content will go here -->
     </div>
     
     <!-- partial -->
+    <!-- Vanta.js NET effect -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script>
+      // Initialize Vanta.js NET effect with your specifications
+      document.addEventListener('DOMContentLoaded', function() {
+        // Wait a bit for Three.js modules to load
+        setTimeout(() => {
+          if (typeof VANTA !== 'undefined') {
+            VANTA.NET({
+              el: "#vanta-net-bg",
+              mouseControls: false,    // Removed cursor interaction as requested
+              touchControls: false,    // Removed touch interaction as requested
+              gyroControls: false,
+              minHeight: 200.00,
+              minWidth: 200.00,
+              scale: 1.00,
+              scaleMobile: 1.00,
+              points: 20.00,
+              maxDistance: 27.00,
+              spacing: 19.00,
+              showDots: false,
+              color: 0xff4e42,         // Your red-orange color scheme
+              backgroundColor: 0x000000, // Transparent black (will be overridden)
+              backgroundAlpha: 0.0     // Make background fully transparent
+            });
+            
+            // Remove the grey background after initialization
+            setTimeout(() => {
+              const vantaCanvas = document.querySelector('#vanta-net-bg canvas');
+              if (vantaCanvas) {
+                vantaCanvas.style.backgroundColor = 'transparent';
+              }
+            }, 100);
+          }
+        }, 1000);
+      });
+    </script>
+    
+    <!-- Audio system is now handled in script.js -->
+    <script>
+      // Simple debug status updater
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+          const debugStatus = document.getElementById('debug-status');
+          if (debugStatus) {
+            debugStatus.textContent = 'Audio system initializing...';
+            debugStatus.style.color = '#4caf50';
+          }
+        }, 1000);
+        
+        setTimeout(() => {
+          const debugStatus = document.getElementById('debug-status');
+          if (debugStatus) {
+            debugStatus.textContent = 'Ready! Play audio to test the visualizer.';
+            debugStatus.style.color = '#4caf50';
+          }
+        }, 2000);
+      });
+    </script>
+    
     <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js'></script>
