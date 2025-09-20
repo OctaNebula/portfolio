@@ -462,11 +462,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Mark window as minimized instead of hiding it
     window.dataset.minimized = 'true';
     
-    // Save original position for restore
-    if (!window.dataset.originalLeft) {
-      window.dataset.originalLeft = window.style.left;
-      window.dataset.originalTop = window.style.top;
-    }
+    // Save current actual position (including any transforms from dragging)
+    const rect = window.getBoundingClientRect();
+    const contentLayer = document.getElementById('content-layer');
+    const contentRect = contentLayer.getBoundingClientRect();
+    
+    // Calculate position relative to content layer
+    window.dataset.originalLeft = (rect.left - contentRect.left) + 'px';
+    window.dataset.originalTop = (rect.top - contentRect.top) + 'px';
     
     // Get start button position for animation target
     const startButton = document.querySelector('.start-button');
@@ -501,15 +504,17 @@ document.addEventListener("DOMContentLoaded", function () {
     window.dataset.minimized = 'false';
     window.style.visibility = 'visible';
     
-    // Get start button position for animation start point
-    const startButton = document.querySelector('.start-button');
-    const startButtonRect = startButton.getBoundingClientRect();
-    
-    // Restore to original position if saved
+    // Restore to original position if saved and clear any transforms
     if (window.dataset.originalLeft && window.dataset.originalTop) {
       window.style.left = window.dataset.originalLeft;
       window.style.top = window.dataset.originalTop;
+      // Clear any GSAP transforms from dragging
+      gsap.set(window, { x: 0, y: 0 });
     }
+    
+    // Get start button position for animation start point
+    const startButton = document.querySelector('.start-button');
+    const startButtonRect = startButton.getBoundingClientRect();
     
     // Calculate start position (from start button center)
     const windowRect = window.getBoundingClientRect();
