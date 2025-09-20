@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Additional Pages - OctaNebula</title>
+    <style>
+        body {
+            background: transparent;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #ff4e42;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .page-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-card:hover {
+            border-color: #ff6b42;
+            box-shadow: 0 0 20px rgba(255, 78, 66, 0.2);
+        }
+        
+        .page-title {
+            color: #ff4e42;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .page-description {
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .page-link {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid #ff4e42;
+            border-radius: 5px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .page-link:hover {
+            background: #ff4e42;
+            color: #000;
+        }
+        
+        .coming-soon {
+            background: rgba(255, 78, 66, 0.1);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .coming-soon-title {
+            color: #ff4e42;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 78, 66, 0.2);
+        }
+        
+        .feature-list li:before {
+            content: "🔸 ";
+            color: #ff4e42;
+        }
+        
+        .section-subtitle {
+            color: #ff6b42;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Additional Portfolio Pages</h1>
+        
+        <div class="pages-grid">
+            <div class="page-card">
+                <div class="page-title">Resume/CV</div>
+                <div class="page-description">
+                    Comprehensive professional resume with detailed work experience, 
+                    education, and achievements in an interactive format.
+                </div>
+                <a href="#" class="page-link">View Resume</a>
+            </div>
+            
+            <div class="page-card">
+                <div class="page-title">Blog</div>
+                <div class="page-description">
+                    Technical articles, tutorials, and insights about web development, 
+                    3D graphics, and emerging technologies.
+                </div>
+                <a href="#" class="page-link">Read Articles</a>
+            </div>
+            
+            <div class="page-card">
+                <div class="page-title">Playground</div>
+                <div class="page-description">
+                    Interactive demos, code experiments, and creative coding projects. 
+                    A space for testing new ideas and showcasing technical capabilities.
+                </div>
+                <a href="#" class="page-link">Explore Demos</a>
+            </div>
+            
+            <div class="page-card">
+                <div class="page-title">Resources</div>
+                <div class="page-description">
+                    Useful tools, libraries, templates, and resources for developers. 
+                    Curated collection of helpful materials for web development.
+                </div>
+                <a href="#" class="page-link">Browse Resources</a>
+            </div>
+            
+            <div class="page-card">
+                <div class="page-title">Gallery</div>
+                <div class="page-description">
+                    Visual showcase of designs, screenshots, and creative work. 
+                    A curated collection of visual projects and design explorations.
+                </div>
+                <a href="#" class="page-link">View Gallery</a>
+            </div>
+            
+            <div class="page-card">
+                <div class="page-title">Testimonials</div>
+                <div class="page-description">
+                    Client feedback, recommendations, and success stories from 
+                    previous projects and professional collaborations.
+                </div>
+                <a href="#" class="page-link">Read Reviews</a>
+            </div>
+        </div>
+        
+        <h2 class="section-subtitle">Future Enhancements</h2>
+        <div class="coming-soon">
+            <div class="coming-soon-title">🚀 Coming Soon</div>
+            <div>Exciting new features and pages in development:</div>
+            <ul class="feature-list">
+                <li>Interactive 3D portfolio showcase</li>
+                <li>Real-time collaboration tools</li>
+                <li>Advanced project filtering and search</li>
+                <li>Client portal for project management</li>
+                <li>Live coding environment</li>
+                <li>WebXR experiences and demos</li>
+            </ul>
+        </div>
+        
+        <div class="page-card" style="margin-top: 20px;">
+            <div class="page-title">📋 Page Index</div>
+            <div class="page-description">
+                This pages directory serves as a hub for additional portfolio content. 
+                Each section above will be developed into full pages as the portfolio expands.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

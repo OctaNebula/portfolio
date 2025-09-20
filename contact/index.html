@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - OctaNebula</title>
+    <style>
+        body {
+            background: transparent;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #ff4e42;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .contact-method {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-method:hover {
+            border-color: #ff6b42;
+            box-shadow: 0 0 20px rgba(255, 78, 66, 0.2);
+        }
+        
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ff4e42;
+        }
+        
+        .contact-title {
+            color: #ff6b42;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            color: #ffffff;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .contact-link {
+            display: inline-block;
+            color: #ff4e42;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid #ff4e42;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-link:hover {
+            background: #ff4e42;
+            color: #000;
+        }
+        
+        .contact-form {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .form-title {
+            color: #ff4e42;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            color: #ff6b42;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ff4e42;
+            border-radius: 5px;
+            padding: 10px;
+            color: #ffffff;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #ff6b42;
+            box-shadow: 0 0 10px rgba(255, 78, 66, 0.3);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-submit {
+            background: #ff4e42;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .form-submit:hover {
+            background: #ff6b42;
+            transform: translateY(-1px);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #ffffff;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            border-color: #ff4e42;
+            color: #ff4e42;
+        }
+        
+        .availability {
+            background: rgba(255, 78, 66, 0.1);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .availability-status {
+            color: #4caf50;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Get In Touch</h1>
+        
+        <div class="availability">
+            <div class="availability-status">🟢 Available for new projects</div>
+            <div>Currently accepting freelance and collaboration opportunities</div>
+        </div>
+        
+        <div class="contact-grid">
+            <div class="contact-method">
+                <div class="contact-icon">📧</div>
+                <div class="contact-title">Email</div>
+                <div class="contact-info">
+                    Best for project inquiries and detailed discussions
+                </div>
+                <a href="mailto:hello@octanebula.dev" class="contact-link">hello@octanebula.dev</a>
+            </div>
+            
+            <div class="contact-method">
+                <div class="contact-icon">💼</div>
+                <div class="contact-title">LinkedIn</div>
+                <div class="contact-info">
+                    Professional networking and career opportunities
+                </div>
+                <a href="#" class="contact-link">Connect on LinkedIn</a>
+            </div>
+            
+            <div class="contact-method">
+                <div class="contact-icon">🐙</div>
+                <div class="contact-title">GitHub</div>
+                <div class="contact-info">
+                    View my code, contributions, and open source work
+                </div>
+                <a href="#" class="contact-link">Follow on GitHub</a>
+            </div>
+            
+            <div class="contact-method">
+                <div class="contact-icon">💬</div>
+                <div class="contact-title">Discord</div>
+                <div class="contact-info">
+                    Real-time collaboration and quick discussions
+                </div>
+                <a href="#" class="contact-link">Join Server</a>
+            </div>
+        </div>
+        
+        <div class="contact-form">
+            <div class="form-title">Send a Message</div>
+            <form>
+                <div class="form-group">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="message">Message</label>
+                    <textarea id="message" name="message" class="form-textarea" placeholder="Tell me about your project or inquiry..." required></textarea>
+                </div>
+                
+                <button type="submit" class="form-submit">Send Message</button>
+            </form>
+        </div>
+        
+        <div class="social-links">
+            <a href="#" class="social-link">
+                <span>🌐</span>
+                <span>Portfolio</span>
+            </a>
+            <a href="#" class="social-link">
+                <span>📱</span>
+                <span>Twitter</span>
+            </a>
+            <a href="#" class="social-link">
+                <span>🎨</span>
+                <span>Behance</span>
+            </a>
+            <a href="#" class="social-link">
+                <span>📺</span>
+                <span>YouTube</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

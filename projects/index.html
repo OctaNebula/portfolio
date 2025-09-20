@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - OctaNebula</title>
+    <style>
+        body {
+            background: transparent;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #ff4e42;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .project-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ff4e42;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            border-color: #ff6b42;
+            box-shadow: 0 0 20px rgba(255, 78, 66, 0.2);
+        }
+        
+        .project-title {
+            color: #ff4e42;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .project-description {
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tech-tag {
+            background: rgba(255, 78, 66, 0.2);
+            color: #ff4e42;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid #ff4e42;
+        }
+        
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .project-link {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .project-link:hover {
+            background: #ffffff;
+            color: #000;
+        }
+        
+        .project-link.primary {
+            border-color: #ff4e42;
+            color: #ff4e42;
+        }
+        
+        .project-link.primary:hover {
+            background: #ff4e42;
+            color: #000;
+        }
+        
+        .section-subtitle {
+            color: #ff6b42;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Projects Portfolio</h1>
+        
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-title">Interactive Desktop Portfolio</div>
+                <div class="project-description">
+                    A Windows-style desktop interface built with modern web technologies. 
+                    Features draggable windows, taskbar functionality, and immersive audio visualizations.
+                </div>
+                <div class="project-tech">
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">GSAP</span>
+                    <span class="tech-tag">Three.js</span>
+                    <span class="tech-tag">CSS3</span>
+                    <span class="tech-tag">HTML5</span>
+                </div>
+                <div class="project-links">
+                    <a href="#" class="project-link primary">Live Demo</a>
+                    <a href="#" class="project-link">GitHub</a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-title">Audio Visualizer Engine</div>
+                <div class="project-description">
+                    Real-time audio visualization system with multiple rendering modes, 
+                    WebGL-accelerated graphics, and responsive particle systems.
+                </div>
+                <div class="project-tech">
+                    <span class="tech-tag">Web Audio API</span>
+                    <span class="tech-tag">WebGL</span>
+                    <span class="tech-tag">Three.js</span>
+                    <span class="tech-tag">Canvas</span>
+                </div>
+                <div class="project-links">
+                    <a href="#" class="project-link primary">View Project</a>
+                    <a href="#" class="project-link">Source</a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-title">Dynamic UI Framework</div>
+                <div class="project-description">
+                    Custom framework for building interactive user interfaces with 
+                    animation systems, state management, and component architecture.
+                </div>
+                <div class="project-tech">
+                    <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">GSAP</span>
+                    <span class="tech-tag">Webpack</span>
+                    <span class="tech-tag">SCSS</span>
+                </div>
+                <div class="project-links">
+                    <a href="#" class="project-link primary">Documentation</a>
+                    <a href="#" class="project-link">GitHub</a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-title">3D Web Experience</div>
+                <div class="project-description">
+                    Immersive 3D web application with interactive elements, 
+                    physics simulations, and optimized rendering pipeline.
+                </div>
+                <div class="project-tech">
+                    <span class="tech-tag">Three.js</span>
+                    <span class="tech-tag">WebXR</span>
+                    <span class="tech-tag">GLSL</span>
+                    <span class="tech-tag">React</span>
+                </div>
+                <div class="project-links">
+                    <a href="#" class="project-link primary">Experience</a>
+                    <a href="#" class="project-link">Details</a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-subtitle">Open Source Contributions</h2>
+        <div class="project-card">
+            <div class="project-description">
+                Active contributor to various open source projects in the web development 
+                and visualization ecosystem. Focused on performance optimization, 
+                accessibility improvements, and developer experience enhancements.
+            </div>
+            <div class="project-links">
+                <a href="#" class="project-link">GitHub Profile</a>
+                <a href="#" class="project-link">Contributions</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
