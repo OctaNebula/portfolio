@@ -289,8 +289,11 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Add double-click to maximize functionality on titlebar
     titlebar.addEventListener('dblclick', (e) => {
-      // Don't maximize if a button animation is in progress
-      if (!window.dataset.buttonAnimating) {
+      // Only prevent if we're currently in the middle of an animation
+      // Check if the flag was set very recently (within 100ms)
+      const now = Date.now();
+      if (!window.dataset.buttonAnimatingTimestamp || 
+          (now - parseInt(window.dataset.buttonAnimatingTimestamp)) > 100) {
         maximizeWindow(window);
       }
     });
@@ -359,12 +362,14 @@ document.addEventListener("DOMContentLoaded", function () {
     minimizeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       window.dataset.buttonAnimating = 'true';
+      window.dataset.buttonAnimatingTimestamp = Date.now().toString();
       setTimeout(() => window.dataset.buttonAnimating = 'false', 500);
       minimizeWindow(window);
     });
     maximizeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       window.dataset.buttonAnimating = 'true';
+      window.dataset.buttonAnimatingTimestamp = Date.now().toString();
       setTimeout(() => window.dataset.buttonAnimating = 'false', 500);
       maximizeWindow(window);
     });
