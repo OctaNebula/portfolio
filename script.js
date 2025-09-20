@@ -159,6 +159,34 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
     
+    // Add keyboard support for Enter key to open selected icon
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && selectedIcon) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const windowType = selectedIcon.dataset.window;
+        
+        // Check if window already exists
+        const existingWindow = document.querySelector(`.desktop-window[data-window-type="${windowType}"]`);
+        
+        if (existingWindow) {
+          // If window is minimized, restore it
+          if (existingWindow.dataset.minimized === 'true') {
+            restoreWindow(existingWindow);
+          } else {
+            // Window exists and is visible, just bring to front
+            bringWindowToFront(existingWindow);
+          }
+        } else {
+          // Create new window
+          openDesktopWindow(windowType);
+        }
+        
+        console.log(`Opening window via Enter key: ${windowType}`);
+      }
+    });
+    
     // Click elsewhere to deselect
     document.addEventListener('click', (e) => {
       // Use the actual clicked element, not e.target which can be wrong during fast drags
