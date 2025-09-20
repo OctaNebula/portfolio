@@ -358,7 +358,6 @@ document.addEventListener("DOMContentLoaded", function () {
       type: "x,y",
       bounds: "#content-layer",
       trigger: titlebar,
-      cursor: "move",
       onDragStart: function() {
         // CRITICAL: Disable iframe pointer events during window drag to prevent conflicts
         const iframe = window.querySelector('.window-iframe');
