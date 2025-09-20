@@ -243,6 +243,13 @@ document.addEventListener("DOMContentLoaded", function () {
       windowIcon.src = 'assets/images/placeholder.png';
     }
     
+    // Add double-click to close functionality on window icon
+    windowIcon.addEventListener('dblclick', (e) => {
+      e.stopPropagation(); // Prevent titlebar double-click from firing
+      window.dataset.buttonAnimating = 'true';
+      closeWindow(window);
+    });
+    
     const titleText = document.createElement('div');
     titleText.className = 'window-title';
     titleText.textContent = title;
@@ -280,15 +287,30 @@ document.addEventListener("DOMContentLoaded", function () {
     titlebar.appendChild(titleSection);
     titlebar.appendChild(controls);
     
+    // Add double-click to maximize functionality on titlebar
+    titlebar.addEventListener('dblclick', (e) => {
+      // Don't maximize if a button animation is in progress
+      if (!window.dataset.buttonAnimating) {
+        maximizeWindow(window);
+      }
+    });
+    
     // Create content area
     const content = document.createElement('div');
-    content.className = 'window-content';
+    content.className = 'window-content iframe-content';
     
-    // Add placeholder image for now
-    const img = document.createElement('img');
-    img.src = './assets/images/placeholder.png';
-    img.alt = `${title} Content`;
-    content.appendChild(img);
+    // Create iframe for portfolio content
+    const iframe = document.createElement('iframe');
+    iframe.className = 'window-iframe';
+    iframe.src = `https://octanebula.dev/${windowType}`;
+    iframe.title = `${title} - Portfolio Content`;
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allowfullscreen', '');
+    
+    // CRITICAL: Add pointer-events none during resize to prevent event conflicts
+    iframe.style.pointerEvents = 'auto';
+    
+    content.appendChild(iframe);
     
     // Assemble window
     window.appendChild(titlebar);
@@ -307,18 +329,45 @@ document.addEventListener("DOMContentLoaded", function () {
       trigger: titlebar,
       cursor: "move",
       onDragStart: function() {
+        // CRITICAL: Disable iframe pointer events during window drag to prevent conflicts
+        const iframe = window.querySelector('.window-iframe');
+        if (iframe) {
+          iframe.style.pointerEvents = 'none';
+        }
+        
         bringWindowToFront(window);
       },
       onPress: function() {
         // Ensure this window comes to front immediately when drag is initiated
         bringWindowToFront(window);
+      },
+      onDragEnd: function() {
+        // CRITICAL: Re-enable iframe pointer events after window drag
+        const iframe = window.querySelector('.window-iframe');
+        if (iframe) {
+          iframe.style.pointerEvents = 'auto';
+        }
       }
     });
     
     // Add event listeners
-    closeBtn.addEventListener('click', () => closeWindow(window));
-    minimizeBtn.addEventListener('click', () => minimizeWindow(window));
-    maximizeBtn.addEventListener('click', () => maximizeWindow(window));
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      closeWindow(window);
+    });
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      setTimeout(() => window.dataset.buttonAnimating = 'false', 500);
+      minimizeWindow(window);
+    });
+    maximizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      setTimeout(() => window.dataset.buttonAnimating = 'false', 500);
+      maximizeWindow(window);
+    });
     
     // Bring to front when clicked (with event handling improvements)
     window.addEventListener('mousedown', (e) => {
@@ -374,6 +423,12 @@ document.addEventListener("DOMContentLoaded", function () {
           this.startY = gsap.getProperty(window, "y");
           this.startWidth = window.offsetWidth;
           this.startHeight = window.offsetHeight;
+          
+          // CRITICAL: Disable iframe pointer events during resize to prevent conflicts
+          const iframe = window.querySelector('.window-iframe');
+          if (iframe) {
+            iframe.style.pointerEvents = 'none';
+          }
           
           bringWindowToFront(window);
         },
@@ -431,6 +486,12 @@ document.addEventListener("DOMContentLoaded", function () {
         onDragEnd: function() {
           // Reset handle position
           gsap.set(this.target, { x: 0, y: 0 });
+          
+          // CRITICAL: Re-enable iframe pointer events after resize
+          const iframe = window.querySelector('.window-iframe');
+          if (iframe) {
+            iframe.style.pointerEvents = 'auto';
+          }
         }
       });
     });
@@ -672,7 +733,7 @@ document.addEventListener("DOMContentLoaded", function () {
     taskbarBtn.textContent = windowTitle;
     taskbarBtn.title = windowTitle;
     
-    // Add click handler to focus window
+    // Add click handler with proper Windows behavior
     taskbarBtn.addEventListener('click', () => {
       // Check if window is minimized
       if (window.dataset.minimized === 'true') {
@@ -681,8 +742,15 @@ document.addEventListener("DOMContentLoaded", function () {
         // Fallback check for hidden windows
         restoreWindow(window);
       } else {
-        // Window is visible, just bring to front
-        bringWindowToFront(window);
+        // Window is visible - check if it's the active window
+        const topWindow = getTopWindow();
+        if (window === topWindow) {
+          // Window is active, minimize it (standard Windows behavior)
+          minimizeWindow(window);
+        } else {
+          // Window is visible but not active, bring to front
+          bringWindowToFront(window);
+        }
       }
       updateTaskbarButtonStates();
     });
