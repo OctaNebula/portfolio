@@ -1,4 +1,33 @@
 /* Projects Page Styles */
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff4e42;
+    border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff6b42;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #ff3e32;
+}
+
+/* Firefox scrollbar */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: #ff4e42 transparent;
+}
+
 body {
     background: transparent;
     margin: 0;
