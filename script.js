@@ -692,7 +692,41 @@ document.addEventListener("DOMContentLoaded", function () {
     if (audioToggle) {
       audioToggle.addEventListener('click', () => {
         console.log('Audio visualizer toggle clicked');
-        // TODO: Add audio visualizer controls
+        
+        // Create or show audio player for myheart.mp3
+        let audioPlayer = document.getElementById('desktop-audio-player');
+        
+        if (!audioPlayer) {
+          // Create audio element
+          audioPlayer = document.createElement('audio');
+          audioPlayer.id = 'desktop-audio-player';
+          audioPlayer.controls = true;
+          audioPlayer.src = './assets/audio/myheart.mp3';
+          audioPlayer.style.position = 'fixed';
+          audioPlayer.style.bottom = '60px';
+          audioPlayer.style.right = '20px';
+          audioPlayer.style.zIndex = '10000';
+          audioPlayer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+          audioPlayer.style.border = '1px solid #ff4e42';
+          audioPlayer.style.borderRadius = '5px';
+          
+          // Add to page
+          document.body.appendChild(audioPlayer);
+          
+          // Connect to visualizer if audio system is ready
+          if (typeof connectAudioElement === 'function') {
+            setTimeout(() => connectAudioElement(audioPlayer), 100);
+          }
+          
+          console.log('Created audio player for myheart.mp3');
+        } else {
+          // Toggle visibility
+          if (audioPlayer.style.display === 'none') {
+            audioPlayer.style.display = 'block';
+          } else {
+            audioPlayer.style.display = 'none';
+          }
+        }
       });
     }
     
