@@ -1002,7 +1002,7 @@ document.addEventListener("DOMContentLoaded", function () {
       connectAllAudioElements();
       
       addTerminalMessage("AUDIO ANALYSIS SYSTEM INITIALIZED.");
-      showNotification("AUDIO ANALYSIS SYSTEM ONLINE");
+      // showNotification("AUDIO ANALYSIS SYSTEM ONLINE");
       return true;
     } catch (error) {
       console.error("Audio initialization error:", error);
