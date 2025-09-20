@@ -1,0 +1,72 @@
+/* About Page Styles */
+body {
+    background: transparent;
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #ff4e42;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.profile-section {
+    margin-bottom: 30px;
+}
+
+.profile-section h2 {
+    color: #ff6b42;
+    border-bottom: 2px solid #ff4e42;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.skill-tag {
+    background: rgba(255, 78, 66, 0.2);
+    border: 1px solid #ff4e42;
+    padding: 5px 10px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.bio-text {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.contact-links {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.contact-link {
+    color: #ff4e42;
+    text-decoration: none;
+    padding: 8px 15px;
+    border: 1px solid #ff4e42;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+    background: #ff4e42;
+    color: #000;
+}
