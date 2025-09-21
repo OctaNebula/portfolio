@@ -427,6 +427,257 @@ document.addEventListener("DOMContentLoaded", function () {
     return window;
   }
 
+  function createBrowserWindow(windowType, title, url) {
+    // Create window container
+    const window = document.createElement('div');
+    window.className = 'desktop-window browser-window';
+    window.dataset.windowType = windowType;
+    window.dataset.minimized = 'false';
+    
+    // Calculate responsive window size (larger for browser)
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    
+    // Browser windows are larger by default
+    const windowWidth = Math.min(800, Math.max(500, viewportWidth * 0.6));
+    const windowHeight = Math.min(600, Math.max(400, viewportHeight * 0.7));
+    
+    window.style.width = `${windowWidth}px`;
+    window.style.height = `${windowHeight}px`;
+    
+    // Position window with slight offset
+    const offsetX = openWindows.length * 30;
+    const offsetY = openWindows.length * 30;
+    window.style.left = `${100 + offsetX}px`;
+    window.style.top = `${80 + offsetY}px`;
+    window.style.zIndex = ++highestZIndex;
+    
+    // Create titlebar
+    const titlebar = document.createElement('div');
+    titlebar.className = 'window-titlebar';
+    
+    // Title section
+    const titleSection = document.createElement('div');
+    titleSection.className = 'window-title-section';
+    
+    // Browser icon
+    const windowIcon = document.createElement('img');
+    windowIcon.className = 'window-icon';
+    windowIcon.src = './assets/images/placeholder.png'; // You can change this to a browser icon
+    windowIcon.alt = 'Browser Icon';
+    
+    // Add double-click to close functionality on browser icon
+    windowIcon.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      closeWindow(window);
+    });
+    
+    const titleText = document.createElement('div');
+    titleText.className = 'window-title';
+    titleText.textContent = title;
+    
+    // Window controls
+    const controls = document.createElement('div');
+    controls.className = 'window-controls';
+    
+    const minimizeBtn = document.createElement('button');
+    minimizeBtn.className = 'window-control-btn minimize';
+    minimizeBtn.innerHTML = '−';
+    minimizeBtn.title = 'Minimize';
+    
+    const maximizeBtn = document.createElement('button');
+    maximizeBtn.className = 'window-control-btn maximize';
+    maximizeBtn.innerHTML = '□';
+    maximizeBtn.title = 'Maximize';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'window-control-btn close';
+    closeBtn.innerHTML = '×';
+    closeBtn.title = 'Close';
+    
+    controls.appendChild(minimizeBtn);
+    controls.appendChild(maximizeBtn);
+    controls.appendChild(closeBtn);
+    
+    titleSection.appendChild(windowIcon);
+    titleSection.appendChild(titleText);
+    
+    titlebar.appendChild(titleSection);
+    titlebar.appendChild(controls);
+    
+    // Create browser navigation bar
+    const navBar = document.createElement('div');
+    navBar.className = 'browser-nav-bar';
+    
+    // Navigation buttons
+    const navButtons = document.createElement('div');
+    navButtons.className = 'nav-buttons';
+    
+    const backBtn = document.createElement('button');
+    backBtn.className = 'nav-btn back-btn';
+    backBtn.innerHTML = '&#8592;';
+    backBtn.title = 'Back';
+    backBtn.disabled = true;
+    
+    const forwardBtn = document.createElement('button');
+    forwardBtn.className = 'nav-btn forward-btn';
+    forwardBtn.innerHTML = '&#8594;';
+    forwardBtn.title = 'Forward';
+    forwardBtn.disabled = true;
+    
+    const refreshBtn = document.createElement('button');
+    refreshBtn.className = 'nav-btn refresh-btn';
+    refreshBtn.innerHTML = '&#8635;';
+    refreshBtn.title = 'Refresh';
+    
+    navButtons.appendChild(backBtn);
+    navButtons.appendChild(forwardBtn);
+    navButtons.appendChild(refreshBtn);
+    
+    // URL bar
+    const urlBar = document.createElement('div');
+    urlBar.className = 'url-bar';
+    
+    const urlInput = document.createElement('input');
+    urlInput.type = 'text';
+    urlInput.className = 'url-input';
+    urlInput.value = url || `https://octanebula.dev/${windowType}`;
+    urlInput.readonly = true;
+    
+    urlBar.appendChild(urlInput);
+    
+    // Menu button
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'nav-btn menu-btn';
+    menuBtn.innerHTML = '&#9776;';
+    menuBtn.title = 'Menu';
+    
+    navBar.appendChild(navButtons);
+    navBar.appendChild(urlBar);
+    navBar.appendChild(menuBtn);
+    
+    // Create content area
+    const content = document.createElement('div');
+    content.className = 'window-content browser-content';
+    
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.className = 'browser-iframe';
+    iframe.src = url || `https://octanebula.dev/${windowType}`;
+    iframe.title = `${title} - Browser Content`;
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.style.pointerEvents = 'auto';
+    
+    content.appendChild(iframe);
+    
+    // Assemble window
+    window.appendChild(titlebar);
+    window.appendChild(navBar);
+    window.appendChild(content);
+    
+    // Add event listeners for browser functionality
+    refreshBtn.addEventListener('click', () => {
+      iframe.src = iframe.src;
+    });
+    
+    // Add double-click to maximize functionality on titlebar
+    titlebar.addEventListener('dblclick', (e) => {
+      if (!window.dataset.buttonAnimating) {
+        window.dataset.buttonAnimating = 'true';
+        maximizeWindow(window);
+        setTimeout(() => {
+          if (window.dataset) window.dataset.buttonAnimating = 'false';
+        }, 500);
+      }
+    });
+    
+    // Add event listeners for window controls
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      closeWindow(window);
+    });
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      setTimeout(() => {
+        if (window.dataset) window.dataset.buttonAnimating = 'false';
+      }, 500);
+      minimizeWindow(window);
+    });
+    maximizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dataset.buttonAnimating = 'true';
+      setTimeout(() => {
+        if (window.dataset) window.dataset.buttonAnimating = 'false';
+      }, 500);
+      maximizeWindow(window);
+    });
+    
+    // Add resize handles
+    addResizeHandles(window);
+    
+    // Add to content layer
+    document.getElementById('content-layer').appendChild(window);
+    
+    // Make window draggable by titlebar
+    Draggable.create(window, {
+      type: "x,y",
+      bounds: "#content-layer",
+      trigger: titlebar,
+      onDragStart: function() {
+        const iframe = window.querySelector('.browser-iframe');
+        if (iframe) {
+          iframe.style.pointerEvents = 'none';
+        }
+        bringWindowToFront(window);
+      },
+      onPress: function() {
+        bringWindowToFront(window);
+      },
+      onDrag: function() {
+        // Keep window in bounds during drag
+      },
+      onDragEnd: function() {
+        const iframe = window.querySelector('.browser-iframe');
+        if (iframe) {
+          iframe.style.pointerEvents = 'auto';
+        }
+        updateTaskbarButtonStates();
+      }
+    });
+    
+    // Bring to front when clicked
+    window.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      bringWindowToFront(window);
+    });
+    
+    // Add to open windows array
+    openWindows.push(window);
+    
+    // Add to taskbar
+    addWindowToTaskbar(window);
+    
+    // Update taskbar state
+    updateTaskbarButtonStates();
+    
+    // Animate window open (same as regular windows)
+    gsap.fromTo(window, {
+      scale: 0.8,
+      opacity: 0
+    }, {
+      scale: 1,
+      opacity: 1,
+      duration: 0.3,
+      ease: "back.out(1.7)"
+    });
+    
+    return window;
+  }
+
   function addResizeHandles(window) {
     // Define all resize handle types and their behavior
     const handles = [
@@ -457,7 +708,7 @@ document.addEventListener("DOMContentLoaded", function () {
           this.startHeight = window.offsetHeight;
           
           // CRITICAL: Disable iframe pointer events during resize to prevent conflicts
-          const iframe = window.querySelector('.window-iframe');
+          const iframe = window.querySelector('.window-iframe, .browser-iframe');
           if (iframe) {
             iframe.style.pointerEvents = 'none';
           }
@@ -520,7 +771,7 @@ document.addEventListener("DOMContentLoaded", function () {
           gsap.set(this.target, { x: 0, y: 0 });
           
           // CRITICAL: Re-enable iframe pointer events after resize
-          const iframe = window.querySelector('.window-iframe');
+          const iframe = window.querySelector('.window-iframe, .browser-iframe');
           if (iframe) {
             iframe.style.pointerEvents = 'auto';
           }
@@ -685,14 +936,22 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Create window with appropriate title
     const titles = {
-      'about': 'About Me',
+      'about': 'About Me - Browser',
       'projects': 'Projects',
       'skills': 'Skills',
       'contact': 'Contact'
     };
     
     const title = titles[windowType] || windowType.toUpperCase();
-    createDesktopWindow(windowType, title);
+    
+    // Use different window types based on content
+    if (windowType === 'about') {
+      // Use browser window for About page
+      createBrowserWindow(windowType, title, `https://octanebula.dev/${windowType}`);
+    } else {
+      // Use basic window for other content
+      createDesktopWindow(windowType, title);
+    }
     
     console.log(`Opened ${windowType} window`);
   }
