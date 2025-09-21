@@ -463,7 +463,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Browser icon
     const windowIcon = document.createElement('img');
     windowIcon.className = 'window-icon';
-    windowIcon.src = './assets/images/placeholder.png'; // You can change this to a browser icon
+    windowIcon.src = './assets/images/browser.png';
     windowIcon.alt = 'Browser Icon';
     
     // Add double-click to close functionality on browser icon
