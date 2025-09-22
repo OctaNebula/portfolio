@@ -52,6 +52,13 @@ h1 {
     font-family: 'thegoodmonolith', sans-serif;
 }
 
+h5 {
+    color: #6f6f6f;
+    margin-bottom: 10px;
+    font-family: 'Futura Std', sans-serif;
+    font-weight: 400;
+}
+
 .profile-section {
     margin-bottom: 30px;
 }
