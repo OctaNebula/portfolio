@@ -1193,7 +1193,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function initFloatingParticles() {
     const container = document.getElementById("floating-particles");
-    const numParticles = 1000;
+    const numParticles = 0; // Set to 0 to see what changes visually
 
     // Clear any existing particles
     container.innerHTML = "";
