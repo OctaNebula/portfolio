@@ -1589,17 +1589,33 @@ document.addEventListener("DOMContentLoaded", function () {
     circularCanvas.height = circularCanvas.offsetHeight;
   }
   resizeCircularCanvas();
-  window.addEventListener("resize", resizeCircularCanvas);
+  // Throttled resize handler for better performance
+  let resizeTimeout;
+  const throttledResize = () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      resizeCircularCanvas();
+    }, 100);
+  };
+  window.addEventListener("resize", throttledResize);
 
   function drawCircularVisualizer() {
     if (!audioAnalyser) return;
-    const width = circularCanvas.width;
-    const height = circularCanvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
+    
+    // Cache canvas dimensions to avoid repeated property access
+    if (!window.circularCanvasCache || window.circularCanvasCache.width !== circularCanvas.width) {
+      window.circularCanvasCache = {
+        width: circularCanvas.width,
+        height: circularCanvas.height,
+        centerX: circularCanvas.width / 2,
+        centerY: circularCanvas.height / 2
+      };
+    }
+    const { width, height, centerX, centerY } = window.circularCanvasCache;
+    
     circularCtx.clearRect(0, 0, width, height);
     audioAnalyser.getByteFrequencyData(frequencyData);
-    const numPoints = 180;
+    const numPoints = 90; // Reduced from 180 for better performance
     // Keep original ring size regardless of canvas size
     const baseRadius = 450 * 0.4; // Fixed at original 450px container size
     circularCtx.beginPath();
@@ -2009,15 +2025,17 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     camera.position.copy(defaultCameraPosition);
     renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: window.devicePixelRatio === 1, // Only enable antialiasing on low DPI screens
       alpha: true,
       powerPreference: "high-performance",
       stencil: false,
-      depth: true
+      depth: true,
+      logarithmicDepthBuffer: false // Disable for better performance
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // Cap pixel ratio at 2 for better performance on high DPI displays
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.getElementById("three-container").appendChild(renderer.domElement);
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enabled = false; // Disable all camera controls for portfolio presentation
@@ -2529,13 +2547,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (updateParticles) {
       updateParticles(time);
     }
-    const rotationSpeed = parseFloat(
-      document.getElementById("rotation-slider").value
-    );
+    
+    // Cache rotation speed - only update every 10 frames to avoid expensive DOM queries
+    if (!window.cachedRotationSpeed || window.rotationSpeedCacheCounter % 10 === 0) {
+      window.cachedRotationSpeed = parseFloat(document.getElementById("rotation-slider").value);
+    }
+    window.rotationSpeedCacheCounter = (window.rotationSpeedCacheCounter || 0) + 1;
+    
     if (anomalyObject) {
       const audioRotationFactor = 1 + audioLevel * audioReactivity * 0.8;
-      anomalyObject.rotation.y += 0.005 * rotationSpeed * audioRotationFactor;
-      anomalyObject.rotation.z += 0.002 * rotationSpeed * audioRotationFactor;
+      anomalyObject.rotation.y += 0.005 * window.cachedRotationSpeed * audioRotationFactor;
+      anomalyObject.rotation.z += 0.002 * window.cachedRotationSpeed * audioRotationFactor;
     }
     renderer.render(scene, camera);
   }
